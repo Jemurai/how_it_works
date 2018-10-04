@@ -1,0 +1,53 @@
+# How it Works: TOTP Based MFA
+
+## Introduction
+
+TODO: Explain TOTP  
+TODO: Reference RFC 6238
+
+The example code in this article is written in Java. This task can be accomplished in any programming language that supports the underlying cryptographic functions.
+
+## Establishing a Seed
+
+The foundation for the security of a TOTP token begins with the seed. This value is used in conjunction with the current time to derive the instance of the token. Because time can be calculated it is not suitable as the only value for our token. Choosing a seed is incredibly important and should not be left up to the user. Seeds should be randomly generated using a [Cryptographically Secure Pseudo Random Number Generator](https://en.wikipedia.org/wiki/Cryptographically_secure_pseudorandom_number_generator). You can determine the number of bytes you want to use, and in this example we are using 64. We will use the [SecureRandom](https://docs.oracle.com/javase/8/docs/api/java/security/SecureRandom.html) implementation provided by the Java language.  
+
+```java
+static String generateSeed() {
+    SecureRandom random = new SecureRandom();
+    byte[] randomBytes = new byte[SEED_LENGTH_IN_BYTES];
+    random.nextBytes(randomBytes);
+    return printHexBinary(randomBytes);
+}
+```
+
+In order to cosume the token we will return the hex representation of the bytes generated. This allows us to pass the value around a bit easier.
+
+## Establishing a counter
+
+The other side of TOTP token generation relies on the current time. We take the current time represented as a long, which is the number of seconds since epoch. This can be derived using `System.currentTimeMillis() / 1000L`. Next, we take the value and divide it by our period, or the number of seconds the token will be valid before rotating. We will use a value of `30` in our example, which is the recommended setting. Finally, we need to put the value into a byte array. There are a few ways to do this, but the following method is on the conservative side accounting for non 64 bit longs and possible endian differences. 
+
+```java
+private static byte[] counterToBytes(long time) {
+    long counter = time / PERIOD;
+    byte[] buffer = new byte[Long.SIZE / Byte.SIZE];
+    for (int i = 7; i >= 0; i--) {
+        buffer[i] = (byte)(counter & 0xff);
+        counter = counter >> 8;
+    }
+    return buffer;
+}
+```
+
+## Generating a Value
+
+## Providing the Secret to the User
+
+## Consuming the Token
+
+## Protecting the Seed
+
+## Drift
+
+## Running the Example
+
+## Conclusions
