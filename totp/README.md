@@ -38,7 +38,25 @@ private static byte[] counterToBytes(long time) {
 }
 ```
 
+Once we have this value we can execute our hmac operation to produce the long form of our OTP value.
+
 ## Generating a Value
+
+Using the seed as a key and the counter as a message, we will derive our long form OTP value. The value returned from our HMac operation will be truncated in order to produce the 6 digit value we will compare against in the end. The following code is a basic HMacSHA1 operation using the standard Java encryption libraries. While [RFC 6238]()
+
+```java
+private static byte[] hash(final byte[] key, final byte[] message) {
+    try {
+        Mac hmac = Mac.getInstance("HmacSHA1");
+        SecretKeySpec keySpec = new SecretKeySpec(key, "RAW");
+        hmac.init(keySpec);
+        return hmac.doFinal(message);
+    } catch (NoSuchAlgorithmException | InvalidKeyException e) {
+        log.error(e.getMessage(), e);
+        return null;
+    }
+}
+```
 
 ## Providing the Secret to the User
 

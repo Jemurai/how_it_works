@@ -40,7 +40,7 @@ class Totp {
         }
 
         int offset = result[result.length - 1] & 0xf;
-        int binary = ((result[offset] & 0x7f) << 24)     |
+        int binary = ((result[offset]     & 0x7f) << 24) |
                      ((result[offset + 1] & 0xff) << 16) |
                      ((result[offset + 2] & 0xff) << 8)  |
                      ((result[offset + 3] & 0xff));
