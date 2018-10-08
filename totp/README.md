@@ -32,7 +32,8 @@ The other side of TOTP token generation relies on the current time. We take the 
 ```java
 private static byte[] counterToBytes(long time) {
     long counter = time / PERIOD;
-    byte[] buffer = new byte[Long.SIZE / Byte.SIZE];
+    byte[] 
+    buffer = new byte[Long.SIZE / Byte.SIZE];
     for (int i = 7; i >= 0; i--) {
         buffer[i] = (byte)(counter & 0xff);
         counter = counter >> 8;
@@ -60,6 +61,8 @@ private static byte[] hash(final byte[] key, final byte[] message) {
     }
 }
 ```
+
+TODO: Complete sequence code and description
 
 ## Providing the Secret to the User
 
@@ -145,6 +148,8 @@ TODO: Write persistence code so this section can be finished.
 
 ## Drift
 
+TODO: Write
+
 ## Running the Example
 
 Make sure you have read an executed all of the steps above. Once you have properly configured the example code you can execute it. You should have your MFA token generator application open and our test token selected. You can execute the program via your IDE or by running:
@@ -157,3 +162,5 @@ mvn exec:java -Dexec.mainClass=com.jemurai.Main
 You will be prompted to enter your token value. After pressing return the program will echo the value you entered, the expected token value, and if the values match. This is the core logic necessary to confirm a TOTP based MFA authentication sequence. If your token values do not match, make sure to enter your token value with plenty of time to spare on the countdown. Because we have not implemented a solution that accounts for drift, the value must be entered during the same period the server generates the expected value.
 
 ## Conclusions
+
+TODO: Write
