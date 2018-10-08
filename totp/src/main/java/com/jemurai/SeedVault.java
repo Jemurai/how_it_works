@@ -11,10 +11,10 @@ import java.util.Map;
 public class SeedVault {
     private final Vault client;
 
-    public SeedVault() throws VaultException {
+    public SeedVault(String token) throws VaultException {
         VaultConfig config = new VaultConfig()
                 .address("http://127.0.0.1:8200")
-                .token("6elaSI7Q4p3mBdl23ScdU6mD")
+                .token(token)
                 .build();
         this.client = new Vault(config);
     }

@@ -94,6 +94,51 @@ Executing this code will save a PNG with the corresponding QR code. In a real wo
 
 ## Protecting the Seed
 
+It is important to respect the secret for what it is -- a secret. With any secret we must do our part to protect it from misuse. How do we do this? Like any other piece of persisted sensitive information, we encrypt it. Because these secrets are not large in size, we have a number of options at our disposal. The important part is not to manage this step on your own. Take advantage of a system that can encrypt and decrypt for you and just worry about storing the encrypted secret value. There are cloud based tools like [Amazon KMS](https://aws.amazon.com/kms/), [Google Cloud Key Management](https://cloud.google.com/kms/), and [Azure Key Vault](https://azure.microsoft.com/en-us/services/key-vault/) as well as services you can run like [Thycotic Secret Server](https://thycotic.com/products/secret-server/), [CyberArk Conjur](https://www.conjur.org/), and [Hashicorp Vault](https://www.vaultproject.io/). All of these options require some kind of setup, and some are commercial products. 
+
+### Setting up Secret Storage
+
+To keep this example both relevant and free of cost to run, we will use Hashicorp Vault. Vault is an open source project with an optional enterprise offering. It's a wonderful project with capabilities far past this example. There are a number of ways to install Vault, but since it is a single binary, the easiest way is to [download the binary](https://www.vaultproject.io/downloads.html) and run it. Start vault with the development flag:
+
+```sh
+vault server -dev
+``` 
+
+During the boot sequence you will be presented with an unseal key and a root token. Copy the root token into the `VAULT_TOKEN` variable in `Main.java`. The messages will look similar to the following:
+
+```sh
+λ vault server -dev
+==> Vault server configuration:
+
+             Api Address: http://127.0.0.1:8200
+                     Cgo: disabled
+         Cluster Address: https://127.0.0.1:8201
+              Listener 1: tcp (addr: "127.0.0.1:8200", cluster address: "127.0.0.1:8201", max_request_duration: "1m30s", max_request_size: "33554432", tls: "disabled")
+               Log Level: (not set)
+                   Mlock: supported: false, enabled: false
+                 Storage: inmem
+                 Version: Vault v0.11.2
+             Version Sha: 2b1a4304374712953ff606c6a925bbe90a4e85dd
+
+WARNING! dev mode is enabled! In this mode, Vault runs entirely in-memory
+and starts unsealed with a single unseal key. The root token is already
+authenticated to the CLI, so you can immediately begin using Vault.
+
+You may need to set the following environment variable:
+
+    $ set VAULT_ADDR=http://127.0.0.1:8200
+
+The unseal key and root token are displayed below in case you want to
+seal/unseal the Vault or re-authenticate.
+
+Unseal Key: mkniY94IlJngQz07gfPZlQnZnvEHMXWQ3/MiFegsfr8=
+Root Token: 4uYnD1vVZZcNkbYe03t0cLkh
+
+Development mode should NOT be used in production installations!
+```
+
+TODO: Write persistence code so this section can be finished.
+
 ## Drift
 
 ## Running the Example
