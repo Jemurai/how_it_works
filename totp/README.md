@@ -2,8 +2,11 @@
 
 ## Introduction
 
-TODO: Explain TOTP  
-TODO: Reference RFC 6238
+Multi-Factor Authentication has become a requirement for any application that values security. In fact, it has become a regulatory requirement in some industries and is being adopted as a requirement in several others. We often discover misconceptions or downright misunderstandings about how MFA works and think this is a topic worth diving into. This particular article will focus on one of the most common second factors, Time based One Time Password, or TOTP. 
+
+TOTP authentication uses a combination of a secret and the current time to derive a predictable multi-digit value. The secret is shared between the issuer and the user in order to compare generated values to determine if the user in fact posses the required secret. You may have heard this incorrectly referred to as "Google Authenticator". While Google had a major part in popularizing this method, it has nothing to do with how TOTP actually works. Any site may create and issue tokens and any mobile application with a correct implementation of TOTP generation may produce a one time value. In this article we will implement server side TOTP token issuing and discuss its security requirements.   
+
+To read more about TOTP token generation, please take a look at [RFC 6238](https://tools.ietf.org/html/rfc6238).
 
 The example code in this article is written in Java. This task can be accomplished in any programming language that supports the underlying cryptographic functions.
 
