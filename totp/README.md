@@ -42,7 +42,7 @@ Once we have this value we can execute our hmac operation to produce the long fo
 
 ## Generating a Value
 
-Using the seed as a key and the counter as a message, we will derive our long form OTP value. The value returned from our HMac operation will be truncated in order to produce the 6 digit value we will compare against in the end. The following code is a basic HMacSHA1 operation using the standard Java encryption libraries. While [RFC 6238]()
+Using the seed as a key and the counter as a message, we will derive our long form OTP value. The value returned from our HMac operation will be truncated in order to produce the 6 digit value we will compare against in the end. The following code is an [HMacSHA1](https://en.wikipedia.org/wiki/HMAC) operation using the standard Java encryption libraries. While [RFC 6238](https://tools.ietf.org/html/rfc6238) describes the possible options of HMacSHA256 and HMacSHA512, they are not viable when distributing the secret for use on most mobile authenticator applications.  
 
 ```java
 private static byte[] hash(final byte[] key, final byte[] message) {
@@ -59,6 +59,33 @@ private static byte[] hash(final byte[] key, final byte[] message) {
 ```
 
 ## Providing the Secret to the User
+
+In order to provide the secret to the user, we need to provide a consistent string in a format that allows the user to generate tokens reliably. There are several ways to do this, including simply providing the secret and issuer to the user directly. The most common method is by providing a QR code that contains the information. For this example we will use the [Zebra Crossing](https://github.com/zxing/zxing) library.  
+
+```java
+class QrCode {
+    private static final int WIDTH = 350;
+    private static final int HEIGHT = 350;
+
+    static void generate(String applicationName, String issuer, String path, String secret) {
+        try {
+            String qrdata = String.format("otpauth://totp/%s?secret=%s&issuer=%s", applicationName, secret, issuer);
+            generateQRCodeImage(qrdata, path);
+        } catch (WriterException | IOException e) {
+            System.out.println("Could not generate QR Code: " + e.getMessage());
+        }
+    }
+
+    private static void generateQRCodeImage(String text, String filePath) throws WriterException, IOException {
+        QRCodeWriter qrCodeWriter = new QRCodeWriter();
+        BitMatrix bitMatrix = qrCodeWriter.encode(text, BarcodeFormat.QR_CODE, WIDTH, HEIGHT);
+        Path path = FileSystems.getDefault().getPath(filePath);
+        MatrixToImageWriter.writeToPath(bitMatrix, "PNG", path);
+    }
+}
+```
+
+Executing this code will save a PNG with the corresponding QR code. In a real world situation, you would render this image directly to the user for import by their application of choice.
 
 ## Consuming the Token
 
