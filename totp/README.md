@@ -147,4 +147,13 @@ TODO: Write persistence code so this section can be finished.
 
 ## Running the Example
 
+Make sure you have read an executed all of the steps above. Once you have properly configured the example code you can execute it. You should have your MFA token generator application open and our test token selected. You can execute the program via your IDE or by running:
+
+```sh
+mvn compile
+mvn exec:java -Dexec.mainClass=com.jemurai.Main
+```
+
+You will be prompted to enter your token value. After pressing return the program will echo the value you entered, the expected token value, and if the values match. This is the core logic necessary to confirm a TOTP based MFA authentication sequence. If your token values do not match, make sure to enter your token value with plenty of time to spare on the countdown. Because we have not implemented a solution that accounts for drift, the value must be entered during the same period the server generates the expected value.
+
 ## Conclusions
