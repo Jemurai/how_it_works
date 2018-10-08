@@ -92,6 +92,10 @@ Executing this code will save a PNG with the corresponding QR code. In a real wo
 
 ## Consuming the Token
 
+In order to test our implementation we will need a program that can accept an `otpauth://` string or a QR Code. This can be done a number of ways. If you want to do this via a mobile device, you can use Google Authenticator or Authy. Both of these programs will scan a QR code. If you want to try locally, 1Password provides a way to import a QR image by adding a label to a login and selecting One-Time Password as the type. You can import the created image using the QR code icon and selecting the path to the generated image.
+
+Once the secret is imported it will start producing values. You can use these as your entry values into the example program.
+
 ## Protecting the Seed
 
 It is important to respect the secret for what it is -- a secret. With any secret we must do our part to protect it from misuse. How do we do this? Like any other piece of persisted sensitive information, we encrypt it. Because these secrets are not large in size, we have a number of options at our disposal. The important part is not to manage this step on your own. Take advantage of a system that can encrypt and decrypt for you and just worry about storing the encrypted secret value. There are cloud based tools like [Amazon KMS](https://aws.amazon.com/kms/), [Google Cloud Key Management](https://cloud.google.com/kms/), and [Azure Key Vault](https://azure.microsoft.com/en-us/services/key-vault/) as well as services you can run like [Thycotic Secret Server](https://thycotic.com/products/secret-server/), [CyberArk Conjur](https://www.conjur.org/), and [Hashicorp Vault](https://www.vaultproject.io/). All of these options require some kind of setup, and some are commercial products. 
