@@ -5,11 +5,11 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 
-public class DatabaseConnection {
+class DatabaseConnection {
     private final Logger log = LoggerFactory.getLogger(getClass());
     private final Connection connection;
 
-    public DatabaseConnection() throws SQLException {
+    DatabaseConnection() throws SQLException {
         try {
             Class.forName("org.postgresql.Driver");
         } catch (ClassNotFoundException e) {
@@ -21,23 +21,21 @@ public class DatabaseConnection {
         this.connection = DriverManager.getConnection(url);
     }
 
-    public int writeSecret(String secret, long userId) {
+    void writeSecret(String secret) {
         String query = "INSERT INTO tokens (encrypted_secret, user_id) VALUES (?, ?)";
         try(PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, secret);
-            statement.setLong(2, userId);
-            return statement.executeUpdate();
+            statement.setLong(2, 1);
+            statement.executeUpdate();
         } catch (SQLException e) {
             log.error(e.getMessage(), e);
-            return -1;
         }
     }
 
-    public String getSecret(long userId) {
-        String query = "SELECT FROM tokens WHERE user_id = ?";
-        try(PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setLong(1, userId);
-            ResultSet result = statement.executeQuery();
+    String getSecret() {
+        String query = "SELECT encrypted_secret FROM tokens WHERE user_id = 1";
+        try(Statement statement = connection.createStatement()) {
+            ResultSet result = statement.executeQuery(query);
             if (result.next()) {
                 return result.getString(1);
             } else {
