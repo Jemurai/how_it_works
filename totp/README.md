@@ -62,7 +62,31 @@ private static byte[] hash(final byte[] key, final byte[] message) {
 }
 ```
 
-TODO: Complete sequence code and description
+With the ability to hash our seed and message we can now derive our TOTP value:
+
+```java
+static String generateInstance(final String seed, final byte[] counter) {
+    byte[] key = hexToBytes(seed);
+    byte[] result = hash(key, counter);
+
+    if (result == null) {
+        throw new RuntimeException("Could not produce OTP value");
+    }
+
+    int offset = result[result.length - 1] & 0xf;
+    int binary = ((result[offset]     & 0x7f) << 24) |
+                 ((result[offset + 1] & 0xff) << 16) |
+                 ((result[offset + 2] & 0xff) << 8)  |
+                 ((result[offset + 3] & 0xff));
+
+    StringBuilder code = new StringBuilder(Integer.toString(binary % POWER));
+    while (code.length() < DIGITS) code.insert(0, "0");
+
+    return code.toString();
+}
+``` 
+
+Using the seed as the key and the counter as the message, we perform the necessary conversions, perform the hash, and truncate the message according to the specification. Finally, we divide the result by 10 to the power of the expected digits (in our case 6) and convert that to a string value. If the result is less than 6 digits we pad it with zeros.
 
 ## Providing the Secret to the User
 
@@ -178,7 +202,7 @@ Make sure you have read an executed all of the steps above. Once you have proper
 createdb totp
 mvn flyway:migrate
 mvn compile
-mvn exec:java -Dexec.mainClass=com.jemurai.Main
+mvn -q exec:java -Dexec.mainClass=com.jemurai.Main
 ```
 
 You will be prompted to enter your token value. After pressing return the program will echo the value you entered, the expected token value, and if the values match. This is the core logic necessary to confirm a TOTP based MFA authentication sequence. If your token values do not match, make sure to enter your token value with plenty of time to spare on the countdown. Because we have not implemented a solution that accounts for drift, the value must be entered during the same period the server generates the expected value. If this is your first time running the example you will need to import the QR code that was generated before the input prompt. If everything was done correctly you will see output similar to the following:
