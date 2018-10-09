@@ -108,7 +108,7 @@ It is important to respect the secret for what it is -- a secret. With any secre
 To keep this example both relevant and free of cost to run, we will use Hashicorp Vault. Vault is an open source project with an optional enterprise offering. It's a wonderful project with capabilities far past this example. There are a number of ways to install Vault, but since it is a single binary, the easiest way is to [download the binary](https://www.vaultproject.io/downloads.html) and run it. Start vault with the development flag:
 
 ```sh
-vault server -dev
+λ vault server -dev
 ``` 
 
 During the boot sequence you will be presented with an unseal key and a root token. Copy the root token into the `VAULT_TOKEN` variable in `Main.java`. The messages will look similar to the following:
@@ -144,6 +144,26 @@ Root Token: 4uYnD1vVZZcNkbYe03t0cLkh
 Development mode should NOT be used in production installations!
 ```
 
+Once Vault is booted you will need to enable the [Transit Backend](https://www.vaultproject.io/docs/secrets/transit/index.html). This allows us to create an encryption key inside of Vault and seamlessly encrypt and decrypt information.
+
+```sh
+λ export VAULT_ADDR=http://127.0.0.1:8200
+λ vault secrets enable transit
+Success! Enabled the transit secrets engine at: transit/
+λ vault write -f transit/keys/how_it_works_totp
+Success! Data written to: transit/keys/how_it_works_totp
+λ echo "my secret" | base64
+Im15IHNlY3JldCIgDQo=
+λ vault write transit/encrypt/myapp plaintext=Im15IHNlY3JldCIgDQo=
+Key           Value
+---           -----
+ciphertext    vault:v1:/HeILzBTv+JbxdaYeKLVB9RVH9o/b+Lilrja88VhCuaSSlvUY+IzHp2Uλ vault write transit/encrypt/myapp plaintext=Im15IHNlY3JldCIgDQo=
+λ vault write -field=plaintext transit/decrypt/myapp ciphertext=vault:v1:/HeILzBTv+JbxdaYeKLVB9RVH9o/b+Lilrja88VhCuaSSlvUY+IzHp2U | base64 -d
+"my secret"
+```
+
+We can now encrypt and decrypt our TOTP secrets.
+
 TODO: Write persistence code so this section can be finished.
 
 ## Drift
@@ -152,14 +172,24 @@ TODO: Write
 
 ## Running the Example
 
-Make sure you have read an executed all of the steps above. Once you have properly configured the example code you can execute it. You should have your MFA token generator application open and our test token selected. You can execute the program via your IDE or by running:
+Make sure you have read an executed all of the steps above. Once you have properly configured the example code you can execute it. You should have your MFA token generator application open and our test token selected. You can setup and execute the program by running:
 
 ```sh
+createdb totp
+mvn flyway:migrate
 mvn compile
 mvn exec:java -Dexec.mainClass=com.jemurai.Main
 ```
 
-You will be prompted to enter your token value. After pressing return the program will echo the value you entered, the expected token value, and if the values match. This is the core logic necessary to confirm a TOTP based MFA authentication sequence. If your token values do not match, make sure to enter your token value with plenty of time to spare on the countdown. Because we have not implemented a solution that accounts for drift, the value must be entered during the same period the server generates the expected value.
+You will be prompted to enter your token value. After pressing return the program will echo the value you entered, the expected token value, and if the values match. This is the core logic necessary to confirm a TOTP based MFA authentication sequence. If your token values do not match, make sure to enter your token value with plenty of time to spare on the countdown. Because we have not implemented a solution that accounts for drift, the value must be entered during the same period the server generates the expected value. If this is your first time running the example you will need to import the QR code that was generated before the input prompt. If everything was done correctly you will see output similar to the following:
+
+```sh
+MFA Token: 
+808973
+Entered: 808973 : Generated: 808973 : Match: true
+```
+
+At this point you have successfully implemented server side TOTP based MFA and used a client side token generator to validate the implementation.
 
 ## Conclusions
 
