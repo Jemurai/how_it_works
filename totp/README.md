@@ -232,7 +232,7 @@ mvn compile
 export VAULT_TOKEN=<YOUR VAULT ROOT TOKEN>
 # For Windows users
 set VAULT_TOKEN=<YOUR VAULT ROOT TOKEN>
-mvn -q exec:java -Dexec.mainClass=com.jemurai.Main
+mvn -q exec:java -Dexec.mainClass=com.jemurai.howitworks.totp.Main
 ```
 
 You will be prompted to enter your token value. After pressing return the program will echo the value you entered, the expected token value, and if the values match. This is the core logic necessary to confirm a TOTP based MFA authentication sequence. If your token values do not match, make sure to enter your token value with plenty of time to spare on the countdown. Because we have not implemented a solution that accounts for drift, the value must be entered during the same period the server generates the expected value. If this is your first time running the example you will need to import the QR code that was generated before the input prompt. If everything was done correctly you will see output similar to the following:

@@ -1,9 +1,13 @@
-package com.jemurai;
+package com.jemurai.howitworks.totp;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.Statement;
+import java.sql.ResultSet;
 
 class DatabaseConnection {
     private final Logger log = LoggerFactory.getLogger(getClass());
@@ -21,9 +25,9 @@ class DatabaseConnection {
         this.connection = DriverManager.getConnection(url);
     }
 
-    void writeSecret(String secret) {
+    void writeSecret(final String secret) {
         String query = "INSERT INTO tokens (encrypted_secret, user_id) VALUES (?, ?)";
-        try(PreparedStatement statement = connection.prepareStatement(query)) {
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, secret);
             statement.setLong(2, 1);
             statement.executeUpdate();
@@ -34,7 +38,7 @@ class DatabaseConnection {
 
     String getSecret() {
         String query = "SELECT encrypted_secret FROM tokens WHERE user_id = 1";
-        try(Statement statement = connection.createStatement()) {
+        try (Statement statement = connection.createStatement()) {
             ResultSet result = statement.executeQuery(query);
             if (result.next()) {
                 return result.getString(1);

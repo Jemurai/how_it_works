@@ -1,4 +1,4 @@
-package com.jemurai;
+package com.jemurai.howitworks.totp;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +18,8 @@ class Totp {
     private static final int POWER = 1000000;
     private static final int PERIOD = 30;
     private static final int DIGITS = 6;
+
+    private Totp() { }
 
     static String generateSeed() {
         SecureRandom random = new SecureRandom();
@@ -46,15 +48,20 @@ class Totp {
                      ((result[offset + 3] & 0xff));
 
         StringBuilder code = new StringBuilder(Integer.toString(binary % POWER));
-        while (code.length() < DIGITS) code.insert(0, "0");
+
+        while (code.length() < DIGITS) {
+            code.insert(0, "0");
+        }
 
         return code.toString();
     }
 
-    static byte[] hexToBytes(String hex) {
-        byte[] bArray = new BigInteger("10" + hex,16).toByteArray();
+    static byte[] hexToBytes(final String hex) {
+        byte[] bArray = new BigInteger("10" + hex, 16).toByteArray();
         byte[] ret = new byte[bArray.length - 1];
-        if (ret.length >= 0) System.arraycopy(bArray, 1, ret, 0, ret.length);
+        if (ret.length >= 0) {
+            System.arraycopy(bArray, 1, ret, 0, ret.length);
+        }
         return ret;
     }
 
@@ -62,11 +69,11 @@ class Totp {
         return counterToBytes(System.currentTimeMillis() / 1000L);
     }
 
-    private static byte[] counterToBytes(long time) {
+    private static byte[] counterToBytes(final long time) {
         long counter = time / PERIOD;
         byte[] buffer = new byte[Long.SIZE / Byte.SIZE];
         for (int i = 7; i >= 0; i--) {
-            buffer[i] = (byte)(counter & 0xff);
+            buffer[i] = (byte) (counter & 0xff);
             counter = counter >> 8;
         }
         return buffer;

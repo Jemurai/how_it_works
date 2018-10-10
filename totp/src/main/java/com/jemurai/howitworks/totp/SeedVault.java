@@ -1,4 +1,4 @@
-package com.jemurai;
+package com.jemurai.howitworks.totp;
 
 import com.bettercloud.vault.Vault;
 import com.bettercloud.vault.VaultConfig;
@@ -10,7 +10,7 @@ import java.util.Map;
 class SeedVault {
     private final Vault client;
 
-    SeedVault(String token) throws VaultException {
+    SeedVault(final String token) throws VaultException {
         VaultConfig config = new VaultConfig()
                 .address("http://127.0.0.1:8200")
                 .token(token)
@@ -18,7 +18,7 @@ class SeedVault {
         this.client = new Vault(config);
     }
 
-    String encryptSeed(String seed) throws VaultException {
+    String encryptSeed(final String seed) throws VaultException {
         final Map<String, Object> entry = new HashMap<>();
         entry.put("plaintext", seed);
         final LogicalResponse response = client.logical().write("transit/encrypt/myapp", entry);
@@ -26,7 +26,7 @@ class SeedVault {
         return response.getData().get("ciphertext");
     }
 
-    String decryptSeed(String ciphertext) throws VaultException {
+    String decryptSeed(final String ciphertext) throws VaultException {
         final Map<String, Object> entry = new HashMap<>();
         entry.put("ciphertext", ciphertext);
         final LogicalResponse response = client.logical().write("transit/decrypt/myapp", entry);

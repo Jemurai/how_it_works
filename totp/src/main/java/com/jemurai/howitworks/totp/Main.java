@@ -1,19 +1,19 @@
-package com.jemurai;
+package com.jemurai.howitworks.totp;
 
 import com.bettercloud.vault.VaultException;
 import org.apache.commons.codec.binary.Base32;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.sql.SQLException;
 import java.util.Scanner;
-
-import static com.jemurai.Totp.generateInstance;
-import static com.jemurai.Totp.hexToBytes;
+import static com.jemurai.howitworks.totp.Totp.generateInstance;
+import static com.jemurai.howitworks.totp.Totp.hexToBytes;
 
 public class Main {
     private static final Logger log = LoggerFactory.getLogger(Main.class);
     private static String VAULT_TOKEN = System.getenv("VAULT_TOKEN");
+
+    private Main() { }
 
     private static String generateSeed() {
         String seed = Totp.generateSeed();
@@ -24,7 +24,7 @@ public class Main {
         return seed;
     }
 
-    private static String getSeed(DatabaseConnection connection, SeedVault vault) throws VaultException {
+    private static String getSeed(final DatabaseConnection connection, final SeedVault vault) throws VaultException {
         String secret = connection.getSecret();
 
         if (secret == null) {
