@@ -174,25 +174,29 @@ Once Vault is booted you will need to enable the [Transit Backend](https://www.v
 λ export VAULT_ADDR=http://127.0.0.1:8200
 λ vault secrets enable transit
 Success! Enabled the transit secrets engine at: transit/
+
 λ vault write -f transit/keys/how_it_works_totp
 Success! Data written to: transit/keys/how_it_works_totp
+
 λ echo "my secret" | base64
 Im15IHNlY3JldCIgDQo=
+
 λ vault write transit/encrypt/myapp plaintext=Im15IHNlY3JldCIgDQo=
 Key           Value
 ---           -----
 ciphertext    vault:v1:/HeILzBTv+JbxdaYeKLVB9RVH9o/b+Lilrja88VhCuaSSlvUY+IzHp2Uλ vault write transit/encrypt/myapp plaintext=Im15IHNlY3JldCIgDQo=
+
 λ vault write -field=plaintext transit/decrypt/myapp ciphertext=vault:v1:/HeILzBTv+JbxdaYeKLVB9RVH9o/b+Lilrja88VhCuaSSlvUY+IzHp2U | base64 -d
 "my secret"
 ```
 
-We can now encrypt and decrypt our TOTP secrets.
+We can now encrypt and decrypt our TOTP secrets. The only thing left is to persist those secrets so that they can be referenced on login. For this example we will not be creating a complete user system, but we will setup a database and create an entry with an encrypted seed value to show what the end to end process will resemble.
 
 TODO: Write persistence code so this section can be finished.
 
 ## Drift
 
-TODO: Write
+By now it should be pretty obvious that time synchronization is of the utmost importance. If the server and client differ more than the period, the token comparison will fail. The RFC describes methods for determining drift and tolerance for devices that have drifted for too many periods. This example does not address drift or resynchronization, but it is recommended that a production implementation address this issue. 
 
 ## Running the Example
 
