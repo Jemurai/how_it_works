@@ -2,6 +2,8 @@ package com.jemurai;
 
 import com.bettercloud.vault.VaultException;
 import org.apache.commons.codec.binary.Base32;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 import java.util.Scanner;
@@ -10,7 +12,8 @@ import static com.jemurai.Totp.generateInstance;
 import static com.jemurai.Totp.hexToBytes;
 
 public class Main {
-    static String VAULT_TOKEN = "vEJtbJXidkbF02eO4Rk46I9G";
+    private static final Logger log = LoggerFactory.getLogger(Main.class);
+    private static String VAULT_TOKEN = System.getenv("VAULT_TOKEN");
 
     private static String generateSeed() {
         String seed = Totp.generateSeed();
@@ -36,6 +39,11 @@ public class Main {
     }
 
     public static void main(String[] args) throws VaultException, SQLException {
+        if (VAULT_TOKEN == null) {
+            log.error("VAULT_TOKEN is not set. Exiting");
+            System.exit(1);
+        }
+
         DatabaseConnection connection = new DatabaseConnection();
         SeedVault vault = new SeedVault(VAULT_TOKEN);
 

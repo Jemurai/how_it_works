@@ -192,7 +192,29 @@ ciphertext    vault:v1:/HeILzBTv+JbxdaYeKLVB9RVH9o/b+Lilrja88VhCuaSSlvUY+IzHp2UÎ
 
 We can now encrypt and decrypt our TOTP secrets. The only thing left is to persist those secrets so that they can be referenced on login. For this example we will not be creating a complete user system, but we will setup a database and create an entry with an encrypted seed value to show what the end to end process will resemble.
 
-TODO: Write persistence code so this section can be finished.
+To encrypt and decrypt our seed we can use a Vault library. The following example demonstrates the essential pieces:
+
+```java
+String encryptSeed(String seed) throws VaultException {
+    final Map<String, Object> entry = new HashMap<>();
+    entry.put("plaintext", seed);
+    final LogicalResponse response = client.logical().write("transit/encrypt/myapp", entry);
+
+    return response.getData().get("ciphertext");
+}
+
+String decryptSeed(String ciphertext) throws VaultException {
+    final Map<String, Object> entry = new HashMap<>();
+    entry.put("ciphertext", ciphertext);
+    final LogicalResponse response = client.logical().write("transit/decrypt/myapp", entry);
+
+    return response.getData().get("plaintext");
+}
+``` 
+
+Note the lack of error handling. In a production system you would want to handle the negative and null cases appropriately.
+
+Finally, we take the output of the vault encryption operation and store it in our database. The sample code contains database handling logic, but it is typical boilerplate database code an not directly relevant to explaining the design of a TOTP system.
 
 ## Drift
 
@@ -206,6 +228,10 @@ Make sure you have read an executed all of the steps above. Once you have proper
 createdb totp
 mvn flyway:migrate
 mvn compile
+# For Unix users
+export VAULT_TOKEN=<YOUR VAULT ROOT TOKEN>
+# For Windows users
+set VAULT_TOKEN=<YOUR VAULT ROOT TOKEN>
 mvn -q exec:java -Dexec.mainClass=com.jemurai.Main
 ```
 
@@ -219,6 +245,10 @@ Entered: 808973 : Generated: 808973 : Match: true
 
 At this point you have successfully implemented server side TOTP based MFA and used a client side token generator to validate the implementation.
 
+## Security Pitfalls of TOTP
+
+For a long time TOTP or really, just OTP based MFA was the best option. It was popularized by RSA long before smart phones were capable of generating tokens. This method is fundamentally secure but is open to human error. Well crafted phishing attacks can obtain and replay TOTP based MFA responses. Several years ago FIDO and U2F were introduced and this is now the "most secure" option available.
+
 ## Conclusions
 
-TODO: Write
+Multi-Factor Authentication is an important part of the security of your information systems. Any system providing access to sensitive information should employ the use of MFA to protect that information. With credential theft via phishing on the rise, this could be one of the most important controls you establish. While this article examines an implementation of TOTP token based MFA, you should seek an established provider like Okta, OneLogin, Duo, Auth0, etc. to provide a production ready solution.
