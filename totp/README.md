@@ -135,7 +135,7 @@ To keep this example both relevant and free of cost to run, we will use Hashicor
 λ vault server -dev
 ``` 
 
-During the boot sequence you will be presented with an unseal key and a root token. Copy the root token into the `VAULT_TOKEN` variable in `Main.java`. The messages will look similar to the following:
+During the boot sequence you will be presented with an unseal key and a root token. The example program will expect the `VAULT_TOKEN` environment variable to be set to the root token provided. Your output will be similar to the following:
 
 ```sh
 λ vault server -dev
@@ -222,7 +222,7 @@ By now it should be pretty obvious that time synchronization is of the utmost im
 
 ## Running the Example
 
-Make sure you have read an executed all of the steps above. Once you have properly configured the example code you can execute it. You should have your MFA token generator application open and our test token selected. You can setup and execute the program by running:
+The source code for this example is available on [Github](https://github.com/Jemurai/how_it_works/tree/master/totp). Make sure you have read an executed all of the steps above before attempting to run the example. Additionally, you will need to have [PostgreSQL](https://www.postgresql.org/) installed and running. If this is your first time running the example, you will need to be sure to import the generated token using your preferred application before attempting to type in a value. You should have your MFA token generator application open and the test token selected. You can setup and execute the program by running:
 
 ```sh
 createdb totp
@@ -247,8 +247,8 @@ At this point you have successfully implemented server side TOTP based MFA and u
 
 ## Security Pitfalls of TOTP
 
-For a long time TOTP or really, just OTP based MFA was the best option. It was popularized by RSA long before smart phones were capable of generating tokens. This method is fundamentally secure but is open to human error. Well crafted phishing attacks can obtain and replay TOTP based MFA responses. Several years ago FIDO and U2F were introduced and this is now the "most secure" option available.
+For a long time TOTP or really, just OTP based MFA was the best option. It was popularized by RSA long before smart phones were capable of generating tokens. This method is fundamentally secure but is open to human error. Well crafted phishing attacks can obtain and replay TOTP based MFA responses. Several years ago FIDO and U2F were introduced and this is now the "most secure" option available. It comes with benefits and drawbacks and like all solutions should be carefully considered before use.
 
 ## Conclusions
 
-Multi-Factor Authentication is an important part of the security of your information systems. Any system providing access to sensitive information should employ the use of MFA to protect that information. With credential theft via phishing on the rise, this could be one of the most important controls you establish. While this article examines an implementation of TOTP token based MFA, you should seek an established provider like Okta, OneLogin, Duo, Auth0, etc. to provide a production ready solution.
+Multi-Factor Authentication is an important part of the security of your information systems. Any system providing access to sensitive information should employ the use of MFA to protect that information. With credential theft via phishing on the rise, this could be one of the most important controls you establish. While this article examines an implementation of TOTP token based MFA, you should seek an established provider like [Okta](https://www.okta.com/), [OneLogin](https://www.onelogin.com/), [Duo](https://duo.com/), [Auth0](https://auth0.com/), etc. to provide a production ready solution.
