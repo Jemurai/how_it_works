@@ -30,7 +30,7 @@
                     <dependency>
                         <groupId>org.postgresql</groupId>
                         <artifactId>postgresql</artifactId>
-                        <version>42.2.4</version>
+                        <version>42.3.8</version>
                     </dependency>
                 </dependencies>
             </plugin>
@@ -96,7 +96,7 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.2.4</version>
+            <version>42.3.8</version>
         </dependency>
         <dependency>
             <groupId>org.junit.platform</groupId>
